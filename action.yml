@@ -1,5 +1,5 @@
-name: Walrus GA
-description: Walrus Site Builder
+name: Walrus Sites GA
+description: Walrus Sites Github Action
 branding:
   color: blue
   icon: package
