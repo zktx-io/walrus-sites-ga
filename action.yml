@@ -1,0 +1,90 @@
+name: Walrus GA
+description: Walrus Site Builder
+branding:
+  color: blue
+  icon: package
+
+inputs:
+  config-path:
+    description: 'Path to the configuration file for site-builder'
+    required: true
+  site-path:
+    description: 'Path to the site to deploy'
+    required: true
+  network:
+    description: 'The network to use (e.g., testnet)'
+    required: true
+    type: choice
+    options:
+      - testnet
+    default: testnet
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Fetch latest version
+      id: fetch-version
+      run: |
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/zktx-io/walrus-ga/releases/latest | jq -r .tag_name)
+        echo "VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+
+    - name: Create bin directory and add to $PATH
+      shell: bash
+      run: |
+        mkdir -p bin
+        echo "$(pwd)/bin" >> $GITHUB_PATH
+
+    - name: Define environment variables
+      shell: bash
+      run: |
+        echo "SUI_CONFIG_DIR=/home/runner/.sui/sui_config" >> $GITHUB_ENV
+        echo "SUI_KEYSTORE_FILE=/home/runner/.sui/sui_config/sui.keystore" >> $GITHUB_ENV
+        echo "SUI_CONFIG_FILE=/home/runner/.sui/sui_config/client.yaml" >> $GITHUB_ENV
+
+    - name: Set up Sui wallet
+      shell: bash
+      env:
+        SUI_ADDRESS: ${{ secrets.SUI_ADDRESS }}
+        SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
+      run: |
+        mkdir -p $SUI_CONFIG_DIR
+        CLIENT_CONF="---
+        keystore:
+          File: $SUI_KEYSTORE_FILE
+        envs:
+          - alias: ${{ inputs.network }}
+            rpc: \"https://fullnode.${{ inputs.network }}.sui.io:443\"
+        active_env: ${{ inputs.network }}
+        active_address: \"$SUI_ADDRESS\""
+        echo "$CLIENT_CONF" > $SUI_CONFIG_FILE
+        echo "$SUI_KEYSTORE" > $SUI_KEYSTORE_FILE
+
+    - name: Install and configure Walrus
+      shell: bash
+      run: |
+        curl -sSLo bin/walrus https://github.com/zktx-io/walrus-ga/releases/download/${VERSION}/walrus-latest-ubuntu-x86_64
+        chmod +x bin/walrus
+        mkdir -p ~/.walrus
+        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-ga/releases/download/${VERSION}/client_config.yaml
+        walrus -h # Ensure the walrus binary works
+
+    - name: Download site builder binary from release
+      id: download-builder
+      run: |
+        set -euo pipefail
+        TEMP_DIR=$(mktemp -d)
+        ARCH=$(uname -m)
+        FILE_NAME="site-builder-${ARCH}"
+        ASSET_URL="https://github.com/zktx-io/walrus-ga/releases/download/${VERSION}/${FILE_NAME}"
+        echo "Downloading from URL: ${ASSET_URL}"
+        curl -sSLo "${TEMP_DIR}/site-builder" "${ASSET_URL}" || {
+          echo "Error: Failed to download $FILE_NAME from ${ASSET_URL}"
+          exit 1
+        }
+        chmod +x "${TEMP_DIR}/site-builder"
+        ${TEMP_DIR}/site-builder -h # Ensure the site builder binary works
+        echo "SITE_BUILDER_PATH=${TEMP_DIR}/site-builder" >> $GITHUB_OUTPUT
+
+    - name: Deploy Walrus Site
+      run: |
+        ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} publish ${{ inputs.site-path }}
