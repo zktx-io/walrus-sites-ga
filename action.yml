@@ -26,7 +26,7 @@ runs:
       id: fetch-version
       shell: bash
       run: |
-        LATEST_VERSION=$(curl -s https://api.github.com/repos/zktx-io/walrus-ga/releases/latest | jq -r .tag_name)
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/zktx-io/walrus-site-ga/releases/latest | jq -r .tag_name)
         echo "VERSION=$LATEST_VERSION" >> $GITHUB_ENV
 
     - name: Create bin directory and add to $PATH
@@ -60,10 +60,10 @@ runs:
     - name: Install and configure Walrus
       shell: bash
       run: |
-        curl -sSLo bin/walrus https://github.com/zktx-io/walrus-ga/releases/download/${VERSION}/walrus-latest-ubuntu-x86_64
+        curl -sSLo bin/walrus https://github.com/zktx-io/walrus-site-ga/releases/download/${VERSION}/walrus-latest-ubuntu-x86_64
         chmod +x bin/walrus
         mkdir -p ~/.walrus
-        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-ga/releases/download/${VERSION}/client_config.yaml
+        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-site-ga/releases/download/${VERSION}/client_config.yaml
         walrus -h # Ensure the walrus binary works
 
     - name: Download site builder binary from release
@@ -74,7 +74,7 @@ runs:
         TEMP_DIR=$(mktemp -d)
         ARCH=$(uname -m)
         FILE_NAME="site-builder-${ARCH}"
-        ASSET_URL="https://github.com/zktx-io/walrus-ga/releases/download/${VERSION}/${FILE_NAME}"
+        ASSET_URL="https://github.com/zktx-io/walrus-site-ga/releases/download/${VERSION}/${FILE_NAME}"
         echo "Downloading from URL: ${ASSET_URL}"
         curl -sSLo "${TEMP_DIR}/site-builder" "${ASSET_URL}" || {
           echo "Error: Failed to download $FILE_NAME from ${ASSET_URL}"
