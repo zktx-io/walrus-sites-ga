@@ -24,6 +24,7 @@ runs:
   steps:
     - name: Fetch latest version
       id: fetch-version
+      shell: bash
       run: |
         LATEST_VERSION=$(curl -s https://api.github.com/repos/zktx-io/walrus-ga/releases/latest | jq -r .tag_name)
         echo "VERSION=$LATEST_VERSION" >> $GITHUB_ENV
@@ -43,9 +44,6 @@ runs:
 
     - name: Set up Sui wallet
       shell: bash
-      env:
-        SUI_ADDRESS: ${{ secrets.SUI_ADDRESS }}
-        SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
       run: |
         mkdir -p $SUI_CONFIG_DIR
         CLIENT_CONF="---
@@ -70,6 +68,7 @@ runs:
 
     - name: Download site builder binary from release
       id: download-builder
+      shell: bash
       run: |
         set -euo pipefail
         TEMP_DIR=$(mktemp -d)
@@ -86,5 +85,6 @@ runs:
         echo "SITE_BUILDER_PATH=${TEMP_DIR}/site-builder" >> $GITHUB_OUTPUT
 
     - name: Deploy Walrus Site
+      shell: bash
       run: |
         ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} publish ${{ inputs.site-path }}
