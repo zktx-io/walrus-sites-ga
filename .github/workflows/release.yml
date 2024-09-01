@@ -1,0 +1,49 @@
+name: Build and Release Walrus Site Builder
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  actions: read
+  id-token: write
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Clone Walrus Sites repository
+        run: |
+          git clone https://github.com/MystenLabs/walrus-sites.git
+
+      - name: Build site builder
+        run: |
+          cd walrus-sites
+          cargo build --release
+          mkdir -p ../release
+          ARCH=$(uname -m)
+          cp target/release/site-builder ../release/site-builder-${ARCH}
+
+      - name: Download additional files
+        run: |
+          mkdir -p ./download
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-latest-ubuntu-x86_64 -o ./download/walrus-latest-ubuntu-x86_64
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-configs/client_config.yaml -o ./download/client_config.yaml
+
+      - name: Upload Release to GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./release/site-builder-*
+            ./download/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
