@@ -41,10 +41,14 @@ The following environment variables should be provided securely using GitHub Sec
 
 + SUI_KEYSTORE
     + The contents of the Sui keystore file containing the private keys required to sign transactions on the Sui blockchain. This keystore must be formatted according to the Sui binary specifications:
-        + The keystore is a JSON array of base64 encoded strings.
-        + Each entry in the array represents a key.
-        + When base64 decoded, each key is 33 bytes in length.
-        + The first byte of the decoded key indicates the key type, followed by a 32-byte private key seed.
+      + The keystore is a JSON array of base64 encoded strings.
+      + Each entry in the array represents a key.
+      + When base64 decoded, each key is 33 bytes in length.
+      + The first byte of the decoded key indicates the key type, followed by a 32-byte private key seed.
+    + [Sui Keytool CLI](https://docs.sui.io/references/cli/keytool)
+    ```bash
+      sui keytool generate ed25519
+    ```
 
 ### Example Usage
 
@@ -65,7 +69,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy site to Walrus
-        uses: zktx-io/walrus-ga@v0.1.0
+        uses: zktx-io/walrus-ga@v0.1.1
         with:
           config-path: './path/to/config.yaml'
           site-path: './build'
