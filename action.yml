@@ -60,6 +60,19 @@ runs:
         echo "$CLIENT_CONF" > $SUI_CONFIG_FILE
         echo "$SUI_KEYSTORE" > $SUI_KEYSTORE_FILE
 
+    - name: Get SUI from faucet (testnet only)
+      if: ${{ inputs.network == 'testnet' }}
+      shell: bash
+      run: |
+        echo "Requesting SUI tokens from faucet for address $SUI_ADDRESS"
+        curl --location --request POST 'https://faucet.testnet.sui.io/gas' \
+          --header 'Content-Type: application/json' \
+          --data-raw "{
+              \"FixedAmountRequest\": {
+                  \"recipient\": \"$SUI_ADDRESS\"
+              }
+          }"
+
     - name: Install and configure Walrus
       shell: bash
       run: |
@@ -96,5 +109,4 @@ runs:
         else
           echo "Publishing new site"
           ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} publish ${{ inputs.site-path }}
-
         fi
