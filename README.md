@@ -1,4 +1,4 @@
-# Walrus Sites ithub Actions
+# Walrus Sites Github Actions
 
 ## Reusable GitHub Action for deploying Walrus Sites
 
