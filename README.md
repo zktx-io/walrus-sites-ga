@@ -29,6 +29,8 @@ The following inputs are required to configure the deployment process:
 	+ Options:
         + testnet (default)
 	+ Example: 'testnet
++ object_id: (optional)
+  + Specifies the hex-string object ID of the existing site to be updated. If specified, the action will update the existing site instead of publishing a new one. Leave this field blank to publish a new site.
 
 ### Environment Variables
 
