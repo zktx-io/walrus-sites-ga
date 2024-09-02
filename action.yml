@@ -18,6 +18,9 @@ inputs:
     options:
       - testnet
     default: testnet
+  object-id:
+    description: 'Hex string object ID of the existing site for update. Leave empty for publishing new site.'
+    required: false
 
 runs:
   using: 'composite'
@@ -84,7 +87,14 @@ runs:
         ${TEMP_DIR}/site-builder -h # Ensure the site builder binary works
         echo "SITE_BUILDER_PATH=${TEMP_DIR}/site-builder" >> $GITHUB_OUTPUT
 
-    - name: Deploy Walrus Site
+    - name: Deploy or Update Walrus Site
       shell: bash
       run: |
-        ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} publish ${{ inputs.site-path }}
+        if [ -n "${{ inputs.object-id }}" ]; then
+          echo "Updating existing site with Object ID: ${{ inputs.object-id }}"
+          ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} update ${{ inputs.site-path }} ${{ inputs.object-id }}
+        else
+          echo "Publishing new site"
+          ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} publish ${{ inputs.site-path }}
+
+        fi
