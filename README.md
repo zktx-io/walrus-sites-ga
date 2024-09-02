@@ -28,7 +28,7 @@ The following inputs are required to configure the deployment process:
 	+ Specifies the network environment to use for the build. Currently only the testnet is supported.
 	+ Options:
         + testnet (default)
-	+ Example: 'testnet
+	+ Example: testnet
 + object-id: (optional)
   + Specifies the hex-string object ID of the existing site to be updated. If specified, the action will update the existing site instead of publishing a new one. Leave this field blank to publish a new site.
 
