@@ -75,7 +75,7 @@ jobs:
           site-path: './build'
           network: 'testnet'
         env:
-          SUI_ADDRESS: ${{ var.SUI_ADDRESS }}
+          SUI_ADDRESS: ${{ vars.SUI_ADDRESS }}
           SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
 ```
 
