@@ -74,3 +74,7 @@ jobs:
           SUI_ADDRESS: ${{ secrets.SUI_ADDRESS }}
           SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
 ```
+
+### Example Github
+
+[walrus-sites-ga-example](https://github.com/zktx-io/walrus-sites-ga-example)
