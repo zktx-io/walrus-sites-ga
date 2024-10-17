@@ -36,7 +36,7 @@ jobs:
       - name: Download additional files
         run: |
           mkdir -p ./download
-          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-latest-ubuntu-x86_64 -o ./download/walrus-latest-ubuntu-x86_64
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-latest-ubuntu-x86_64
           curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-configs/client_config.yaml -o ./download/client_config.yaml
 
       - name: Upload Release to GitHub
