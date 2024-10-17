@@ -5,9 +5,6 @@ branding:
   icon: package
 
 inputs:
-  config-path:
-    description: 'Path to the configuration file for site-builder'
-    required: true
   site-path:
     description: 'Path to the site to deploy'
     required: true
@@ -18,6 +15,9 @@ inputs:
     options:
       - testnet
     default: testnet
+  epochs:
+    description: 'Currently on Walrus testnet, the duration of an epoch is 1 day'
+    required: false
   object-id:
     description: 'Hex string object ID of the existing site for update. Leave empty for publishing new site.'
     required: false
@@ -100,13 +100,21 @@ runs:
         ${TEMP_DIR}/site-builder -h # Ensure the site builder binary works
         echo "SITE_BUILDER_PATH=${TEMP_DIR}/site-builder" >> $GITHUB_OUTPUT
 
-    - name: Deploy or Update Walrus Site
+    - name: Deploy or Update Walrus Site (with epochs if specified)
       shell: bash
       run: |
         if [ -n "${{ inputs.object-id }}" ]; then
           echo "Updating existing site with Object ID: ${{ inputs.object-id }}"
-          ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} update ${{ inputs.site-path }} ${{ inputs.object-id }}
+          if [ -n "${{ inputs.epochs }}" ]; then
+            ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }} --epochs ${{ inputs.epochs }}
+          else
+            ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }}
+          fi
         else
           echo "Publishing new site"
-          ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config ${{ inputs.config-path }} publish ${{ inputs.site-path }}
+          if [ -n "${{ inputs.epochs }}" ]; then
+            ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" publish ${{ inputs.site-path }} --epochs ${{ inputs.epochs }}
+          else
+            ${{ steps.download-builder.outputs.SITE_BUILDER_PATH }} --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" publish ${{ inputs.site-path }}
+          fi
         fi
