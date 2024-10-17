@@ -45,5 +45,6 @@ jobs:
           files: |
             ./release/site-builder-*
             ./download/*
+            ./walrus-sites/sites-config.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
