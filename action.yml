@@ -109,15 +109,15 @@ runs:
         if [ -n "${{ inputs.object-id }}" ]; then
           echo "Updating existing site with Object ID: ${{ inputs.object-id }}"
           if [ -n "${{ inputs.epochs }}" ]; then
-            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }} --epochs ${{ inputs.epochs }} --force
+            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }} --epochs ${{ inputs.epochs }}
           else
-            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }} --force
+            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }}
           fi
         else
           echo "Publishing new site"
           if [ -n "${{ inputs.epochs }}" ]; then
-            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" publish ${{ inputs.site-path }} --epochs ${{ inputs.epochs }} --force
+            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" publish ${{ inputs.site-path }} --epochs ${{ inputs.epochs }}
           else
-            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" publish ${{ inputs.site-path }} --force
+            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" publish ${{ inputs.site-path }}
           fi
         fi
