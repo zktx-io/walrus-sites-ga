@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy site to Walrus
-        uses: zktx-io/walrus-ga@v0.1.2
+        uses: zktx-io/walrus-ga@v0.2.0
         with:
           config-path: './path/to/config.yaml'
           site-path: './build'
