@@ -26,9 +26,9 @@ The following inputs are required to configure the deployment process:
 	+ Options:
         + testnet (default)
 	+ Example: 'testnet'
-+ epochs: (Not Required)
++ epochs: (Optional)
   + Currently on Walrus testnet, the duration of an epoch is 1 day.
-+ object-id: (optional)
++ object-id: (Optional)
   + Specifies the hex-string object ID of the existing site to be updated. If specified, the action will update the existing site instead of publishing a new one. Leave this field blank to publish a new site.
 
 ### Environment Variables
@@ -70,9 +70,33 @@ jobs:
       - name: Deploy site to Walrus
         uses: zktx-io/walrus-ga@v0.2.6
         with:
-          config-path: './path/to/config.yaml'
           site-path: './build'
           network: 'testnet'
+        env:
+          SUI_ADDRESS: ${{ vars.SUI_ADDRESS }}
+          SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
+```
+
+```yaml
+name: Update site to Walrus
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy site to Walrus
+        uses: zktx-io/walrus-ga@v0.2.6
+        with:
+          site-path: './build'
+          network: 'testnet'
+          object-id: '0xObjectID'
         env:
           SUI_ADDRESS: ${{ vars.SUI_ADDRESS }}
           SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
