@@ -60,19 +60,6 @@ runs:
         echo "$CLIENT_CONF" > $SUI_CONFIG_FILE
         echo "$SUI_KEYSTORE" > $SUI_KEYSTORE_FILE
 
-    - name: Get SUI from faucet (testnet only)
-      if: ${{ inputs.network == 'testnet' }}
-      shell: bash
-      run: |
-        echo "Requesting SUI tokens from faucet for address $SUI_ADDRESS"
-        curl --location --request POST 'https://faucet.testnet.sui.io/gas' \
-          --header 'Content-Type: application/json' \
-          --data-raw "{
-              \"FixedAmountRequest\": {
-                  \"recipient\": \"$SUI_ADDRESS\"
-              }
-          }"
-
     - name: Install and configure Walrus
       shell: bash
       run: |
@@ -102,6 +89,20 @@ runs:
         ${TEMP_DIR}/site-builder --version
         curl -sSLo "${TEMP_DIR}/sites-config.yaml" https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/sites-config.yaml
         echo "SITE_BUILDER_PATH=${TEMP_DIR}" >> $GITHUB_OUTPUT
+
+    - name: Get SUI and WAL from faucet (testnet only)
+      if: ${{ inputs.network == 'testnet' }}
+      shell: bash
+      run: |
+        echo "Requesting SUI tokens from faucet for address $SUI_ADDRESS"
+        curl --location --request POST 'https://faucet.testnet.sui.io/gas' \
+          --header 'Content-Type: application/json' \
+          --data-raw "{
+              \"FixedAmountRequest\": {
+                  \"recipient\": \"$SUI_ADDRESS\"
+              }
+          }"
+        walrus get-wal
 
     - name: Deploy or Update Walrus Site (with epochs if specified)
       shell: bash
