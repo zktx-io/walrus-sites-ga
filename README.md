@@ -37,6 +37,7 @@ The following environment variables should be provided securely using GitHub Sec
 
 + SUI_ADDRESS:
     + The Sui blockchain address used to provision the site. This should be a valid hexadecimal string (e.g. 0x...).
+	<img width="805" alt="SUI_ADDRESS" src="https://github.com/user-attachments/assets/748e5591-8dfe-41aa-bccd-c2a28e925b98" />
 
 + SUI_KEYSTORE
     + The contents of the Sui keystore file containing the private keys required to sign transactions on the Sui blockchain. This keystore must be formatted according to the Sui binary specifications:
@@ -44,6 +45,9 @@ The following environment variables should be provided securely using GitHub Sec
       + Each entry in the array represents a key.
       + When base64 decoded, each key is 33 bytes in length.
       + The first byte of the decoded key indicates the key type, followed by a 32-byte private key seed.
+
+	<img width="790" alt="SUI_KEYSTORE" src="https://github.com/user-attachments/assets/794624ee-ff36-4358-a308-94a70fe08bee" />
+
     + [Sui Keytool CLI](https://docs.sui.io/references/cli/keytool)
     ```bash
       sui keytool generate ed25519
