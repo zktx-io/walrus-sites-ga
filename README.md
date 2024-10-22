@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy site to Walrus
-        uses: zktx-io/walrus-ga@vlatest
+        uses: zktx-io/walrus-ga@latest
         with:
           site-path: './build'
           network: 'testnet'
@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Update site to Walrus
-        uses: zktx-io/walrus-ga@vlatest
+        uses: zktx-io/walrus-ga@latest
         with:
           site-path: './build'
           network: 'testnet'
