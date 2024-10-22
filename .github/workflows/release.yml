@@ -22,7 +22,8 @@ jobs:
           override: true
 
       - name: Clone Walrus Sites repository
-        uses: actions/checkout@v3
+        run: |
+          git clone https://github.com/MystenLabs/walrus-sites.git
 
       - name: Build site builder
         run: |
@@ -37,8 +38,7 @@ jobs:
           mkdir -p ./download
           curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-latest-ubuntu-x86_64
           # curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-configs/client_config.yaml -o ./download/client_config.yaml
-          # curl -L https://raw.githubusercontent.com/MystenLabs/walrus-docs/main/docs/client_config.yaml -o ./download/client_config.yaml
-          cp ./client_config.yaml ./download/client_config.yaml
+          curl -L https://raw.githubusercontent.com/zktx-io/walrus-sites-ga/refs/heads/main/client_config.yaml -o ./download/client_config.yaml
 
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1
