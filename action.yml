@@ -111,7 +111,7 @@ runs:
         if [ -n "${{ inputs.object-id }}" ]; then
           echo "Updating existing site with Object ID: ${{ inputs.object-id }}"
           if [ -n "${{ inputs.epochs }}" ]; then
-            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }} --epochs ${{ inputs.epochs }}
+            "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }} --epochs ${{ inputs.epochs }} --force
           else
             "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/site-builder" --config "${{ steps.download-builder.outputs.SITE_BUILDER_PATH }}/sites-config.yaml" update ${{ inputs.site-path }} ${{ inputs.object-id }}
           fi
