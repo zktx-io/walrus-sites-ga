@@ -14,31 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-
-      - name: Clone Walrus Sites repository
-        run: |
-          git clone https://github.com/MystenLabs/walrus-sites.git
-          cd walrus-sites
-          git checkout c3f6cff9f0f07540724bbe3c899ce058c1649c99
-
-      - name: Build site builder
-        run: |
-          cd walrus-sites
-          cargo build --release
-          mkdir -p ../release
-          ARCH=$(uname -m)
-          cp target/release/site-builder ../release/site-builder-${ARCH}
-
       - name: Download additional files
         run: |
           mkdir -p ./download
-          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-latest-ubuntu-x86_64
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/site-builder-testnet-latest-ubuntu-x86_64 -o ./download/site-builder-x86_64
+          # curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-x86_64
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/7c541a49119cd1eae66270e06a113589366fc6d8/walrus -o ./download/walrus-x86_64
           # curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-configs/client_config.yaml -o ./download/client_config.yaml
           curl -L https://raw.githubusercontent.com/MystenLabs/walrus-docs/main/docs/client_config.yaml -o ./download/client_config.yaml
 
@@ -46,7 +27,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ./release/site-builder-*
             ./download/*
             ./walrus-sites/sites-config.yaml
         env:
