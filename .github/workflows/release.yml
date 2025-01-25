@@ -24,6 +24,8 @@ jobs:
       - name: Clone Walrus Sites repository
         run: |
           git clone https://github.com/MystenLabs/walrus-sites.git
+          cd walrus-sites
+          git checkout c3f6cff9f0f07540724bbe3c899ce058c1649c99
 
       - name: Build site builder
         run: |
