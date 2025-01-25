@@ -30,6 +30,9 @@ The following inputs are required to configure the deployment process:
   + Currently on Walrus testnet, the duration of an epoch is 1 day.
 + object-id: (Optional)
   + Specifies the hex-string object ID of the existing site to be updated. If specified, the action will update the existing site instead of publishing a new one. Leave this field blank to publish a new site.
++ wal-exchange-enabled: (Optional)
+	+ Enables or disables the automatic exchange of WAL tokens during the deployment process. When enabled, WAL tokens will be automatically retrieved using walrus get-wal.
+	+ Default: true
 
 ### Environment Variables
 

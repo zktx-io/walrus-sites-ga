@@ -15,6 +15,10 @@ inputs:
     options:
       - testnet
     default: testnet
+  wal-exchange-enabled:
+    description: 'Enable or disable WAL exchange (true/false)'
+    required: false
+    default: true
   epochs:
     description: 'Currently on Walrus testnet, the duration of an epoch is 1 day'
     required: false
@@ -103,7 +107,13 @@ runs:
                   \"recipient\": \"$SUI_ADDRESS\"
               }
           }"
-        walrus get-wal
+        if [ "${{ inputs.wal-exchange-enabled }}" = "true" ]; then
+          echo "WAL exchange is enabled. Executing 'walrus get-wal'..."
+          walrus get-wal
+          echo "'walrus get-wal' executed successfully."
+        else
+          echo "WAL exchange is disabled. Skipping 'walrus get-wal'."
+        fi
 
     - name: Deploy or Update Walrus Site (with epochs if specified)
       shell: bash
