@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Clone Walrus Sites repository
         run: |
           git clone https://github.com/MystenLabs/walrus-sites.git
@@ -23,7 +26,6 @@ jobs:
           mkdir -p ./download
           curl -L https://storage.googleapis.com/mysten-walrus-binaries/site-builder-testnet-latest-ubuntu-x86_64 -o ./download/site-builder-x86_64
           curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-x86_64
-          curl -L https://docs.wal.app/setup/client_config.yaml -o ./download/client_config.yaml
 
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1

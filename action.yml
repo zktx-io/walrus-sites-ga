@@ -70,7 +70,7 @@ runs:
         curl -sSLo bin/walrus https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/walrus-x86_64
         chmod +x bin/walrus
         mkdir -p ~/.walrus
-        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/client_config.yaml
+        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/client_config_${{inputs.network}}.yaml
         walrus -h # Ensure the walrus binary works
         walrus --version
 
