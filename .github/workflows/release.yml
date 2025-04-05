@@ -22,10 +22,8 @@ jobs:
         run: |
           mkdir -p ./download
           curl -L https://storage.googleapis.com/mysten-walrus-binaries/site-builder-testnet-latest-ubuntu-x86_64 -o ./download/site-builder-x86_64
-          # curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-x86_64
-          curl -L https://storage.googleapis.com/mysten-walrus-binaries/7c541a49119cd1eae66270e06a113589366fc6d8/walrus -o ./download/walrus-x86_64
-          # curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-configs/client_config.yaml -o ./download/client_config.yaml
-          curl -L https://raw.githubusercontent.com/MystenLabs/walrus-docs/main/docs/client_config.yaml -o ./download/client_config.yaml
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-x86_64
+          curl -L https://docs.wal.app/setup/client_config.yaml -o ./download/client_config.yaml
 
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1
