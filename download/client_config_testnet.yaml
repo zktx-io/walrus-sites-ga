@@ -19,4 +19,4 @@ contexts:
     wallet_config:
       path: ~/.sui/sui_config/client.yaml
       active_env: testnet
-default_context: mainnet
+default_context: testnet
