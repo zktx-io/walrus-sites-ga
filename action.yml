@@ -91,7 +91,7 @@ runs:
         chmod +x "${TEMP_DIR}/site-builder"
         ${TEMP_DIR}/site-builder -h # Ensure the site builder binary works
         ${TEMP_DIR}/site-builder --version
-        curl -sSLo "${TEMP_DIR}/sites-config.yaml" https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/sites-config.yaml
+        curl -sSLo "${TEMP_DIR}/sites-config.yaml" https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/sites-config-${{inputs.network}}.yaml
         echo "SITE_BUILDER_PATH=${TEMP_DIR}" >> $GITHUB_OUTPUT
 
     - name: Get SUI and WAL from faucet (testnet only)

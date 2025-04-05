@@ -17,10 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Clone Walrus Sites repository
-        run: |
-          git clone https://github.com/MystenLabs/walrus-sites.git
-
       - name: Download additional files
         run: |
           mkdir -p ./download
@@ -32,6 +28,5 @@ jobs:
         with:
           files: |
             ./download/*
-            ./walrus-sites/sites-config.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
