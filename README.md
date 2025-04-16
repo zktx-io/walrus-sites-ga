@@ -1,5 +1,16 @@
 # Walrus Sites Github Actions
 
+## ⚠️ Walrus Sites GitHub Action Notice
+
+The legacy **Walrus Sites GA** is now deprecated.
+
+Please use the new official workflow:  
+[`walrus-sites-provenance`](https://github.com/marketplace/actions/walrus-sites-provenance),  
+which supports both **Mainnet** and **Testnet** deployments with integrated SLSA provenance.
+
+👉 For setup and usage, visit:  
+https://github.com/zktx-io/walrus-sites-provenance
+
 ## Reusable GitHub Action for deploying Walrus Sites
 
 This GitHub action allows users to easily deploy their websites to Walrus Sites using a pre-compiled Walrus Site Builder binary. The action automatically downloads the necessary binaries, streamlining the deployment process and making it easy to integrate into any repository.
