@@ -58,7 +58,7 @@ runs:
         active_env: ${{ inputs.network }}
         active_address: \"$SUI_ADDRESS\""
         echo "$CLIENT_CONF" > $SUI_CONFIG_FILE
-        echo "$SUI_KEYSTORE" > $SUI_KEYSTORE_FILE
+        echo "${SUI_KEYSTORE}" | base64 -d | tr -d '\r' > "$SUI_KEYSTORE_FILE"
 
     - name: Install and configure Walrus
       shell: bash
@@ -67,7 +67,7 @@ runs:
         chmod +x bin/walrus
         mkdir -p ~/.walrus
         curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/client_config-${{inputs.network}}.yaml
-        walrus -h # Ensure the walrus binary works
+        # walrus -h # Ensure the walrus binary works
         walrus --version
 
     - name: Download site builder binary from release
@@ -85,7 +85,7 @@ runs:
           exit 1
         }
         chmod +x "${TEMP_DIR}/site-builder"
-        ${TEMP_DIR}/site-builder -h # Ensure the site builder binary works
+        # ${TEMP_DIR}/site-builder -h # Ensure the site builder binary works
         ${TEMP_DIR}/site-builder --version
         curl -sSLo "${TEMP_DIR}/sites-config.yaml" https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/sites-config-${{inputs.network}}.yaml
         echo "SITE_BUILDER_PATH=${TEMP_DIR}" >> $GITHUB_OUTPUT
