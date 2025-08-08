@@ -58,7 +58,7 @@ runs:
         active_env: ${{ inputs.network }}
         active_address: \"$SUI_ADDRESS\""
         echo "$CLIENT_CONF" > $SUI_CONFIG_FILE
-        echo "${SUI_KEYSTORE}" | base64 -d | tr -d '\r' > "$SUI_KEYSTORE_FILE"
+        echo "$SUI_KEYSTORE" > $SUI_KEYSTORE_FILE
 
     - name: Install and configure Walrus
       shell: bash
