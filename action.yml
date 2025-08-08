@@ -15,10 +15,6 @@ inputs:
     options:
       - testnet
     default: testnet
-  wal-exchange-enabled:
-    description: 'Enable or disable WAL exchange (true/false)'
-    required: false
-    default: true
   epochs:
     description: 'Currently on Walrus testnet, the duration of an epoch is 1 day'
     required: false
@@ -67,10 +63,10 @@ runs:
     - name: Install and configure Walrus
       shell: bash
       run: |
-        curl -sSLo bin/walrus https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/walrus-x86_64
+        curl -sSLo bin/walrus https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/walrus-x86_64-${{inputs.network}}
         chmod +x bin/walrus
         mkdir -p ~/.walrus
-        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/client_config_${{inputs.network}}.yaml
+        curl -sSLo ~/.walrus/client_config.yaml https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/client_config-${{inputs.network}}.yaml
         walrus -h # Ensure the walrus binary works
         walrus --version
 
@@ -81,7 +77,7 @@ runs:
         set -euo pipefail
         TEMP_DIR=$(mktemp -d)
         ARCH=$(uname -m)
-        FILE_NAME="site-builder-${ARCH}"
+        FILE_NAME="site-builder-${ARCH}-${{inputs.network}}"
         ASSET_URL="https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/${FILE_NAME}"
         echo "Downloading from URL: ${ASSET_URL}"
         curl -sSLo "${TEMP_DIR}/site-builder" "${ASSET_URL}" || {
@@ -93,27 +89,6 @@ runs:
         ${TEMP_DIR}/site-builder --version
         curl -sSLo "${TEMP_DIR}/sites-config.yaml" https://github.com/zktx-io/walrus-sites-ga/releases/download/${VERSION}/sites-config-${{inputs.network}}.yaml
         echo "SITE_BUILDER_PATH=${TEMP_DIR}" >> $GITHUB_OUTPUT
-
-    - name: Get SUI and WAL from faucet (testnet only)
-      if: ${{ inputs.network == 'testnet' }}
-      continue-on-error: true
-      shell: bash
-      run: |
-        echo "Requesting SUI tokens from faucet for address $SUI_ADDRESS"
-        curl --location --request POST 'https://faucet.testnet.sui.io/gas' \
-          --header 'Content-Type: application/json' \
-          --data-raw "{
-              \"FixedAmountRequest\": {
-                  \"recipient\": \"$SUI_ADDRESS\"
-              }
-          }"
-        if [ "${{ inputs.wal-exchange-enabled }}" = "true" ]; then
-          echo "WAL exchange is enabled. Executing 'walrus get-wal'..."
-          walrus get-wal
-          echo "'walrus get-wal' executed successfully."
-        else
-          echo "WAL exchange is disabled. Skipping 'walrus get-wal'."
-        fi
 
     - name: Deploy or Update Walrus Site (with epochs if specified)
       shell: bash
