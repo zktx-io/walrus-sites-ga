@@ -20,8 +20,10 @@ jobs:
       - name: Download additional files
         run: |
           mkdir -p ./download
-          curl -L https://storage.googleapis.com/mysten-walrus-binaries/site-builder-testnet-latest-ubuntu-x86_64 -o ./download/site-builder-x86_64
-          curl -L https://storage.googleapis.com/mysten-walrus-binaries/walrus-testnet-latest-ubuntu-x86_64 -o ./download/walrus-x86_64
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/site-builder-mainnet-latest-ubuntu-x86_64 -o ./download/mainnet-site-builder-x86_64
+          curl -L https://storage.googleapis.com/mysten-walrus-binaries/site-builder-testnet-latest-ubuntu-x86_64 -o ./download/testnet-site-builder-x86_64
+          curl -L https://bin.wal.app/walrus-mainnet-latest-ubuntu-x86_64 -o ./download/mainnet-walrus-x86_64
+          curl -L https://bin.wal.app/walrus-testnet-latest-ubuntu-x86_64 -o ./download/testnet-walrus-x86_64
 
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1
