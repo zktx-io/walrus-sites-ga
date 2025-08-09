@@ -198,11 +198,11 @@ jobs:
           path: ${{ needs.build-site.outputs.output_dir }}/.well-known
 
       - name: Deploy site to Walrus
-        uses: zktx-io/walrus-sites-ga@v0.4.5
+        uses: MystenLabs/walrus-sites/.github/actions/deploy@3567838a78f974a98d09252ee10f8a237a7a9834
         with:
-          site-path: ${{ needs.build-site.outputs.output_dir}}
-          network: ${{ inputs.network }}
-          epochs: ${{ inputs.epochs }}
-        env:
+          SUI_NETWORK: ${{ inputs.network }}
           SUI_ADDRESS: ${{ inputs.SUI_ADDRESS }}
           SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
+          DIST: ${{ needs.build-site.outputs.output_dir }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EPOCHS: ${{ inputs.epochs }}
