@@ -1,0 +1,201 @@
+name: Walrus Sites Provenance Full Workflow
+
+description: |
+  A reusable GitHub Actions workflow that builds a static site,
+  generates site manifest and provenance, and deploys to Walrus
+  with verified integrity.
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: false
+        type: string
+        default: '.'
+      network:
+        required: true
+        type: string
+        default: 'testnet'
+      epochs:
+        required: true
+        type: number
+        default: 5
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+    outputs:
+      working_directory_checked_out: ${{ steps.check.outputs.working_directory_checked_out }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if working directory is not root
+        id: check
+        run: |
+          if [ "${{ inputs.working-directory }}" != "." ]; then
+            echo "working_directory_checked_out=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "working_directory_checked_out=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload working directory as artifact
+        if: ${{ steps.check.outputs.working_directory_checked_out == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-working-directory
+          path: ${{ inputs.working-directory }}
+
+  build-site:
+    needs: preprocess
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    outputs:
+      output_dir: ${{ steps.parse.outputs.output_dir }}
+      base64_hashes: ${{ steps.generate-resources-hashes.outputs.base64_hashes }}
+
+    steps:
+      - name: Download working directory (only if needed)
+        if: ${{ needs.preprocess.outputs.working_directory_checked_out == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: site-working-directory
+          path: .
+
+      - name: Checkout repository
+        if: ${{ needs.preprocess.outputs.working_directory_checked_out != 'true' }}
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Parse config
+        id: parse
+        run: |
+          CONFIG_PATH="./site.config.json"
+          OUTPUT_DIR=$(jq -r 'if has("path") then .path else error("Missing required field: path") end' "$CONFIG_PATH")
+          NETWORK=$(jq -r 'if has("network") then .network else error("Missing required field: network") end' "$CONFIG_PATH")
+          EPOCHS=$(jq -r 'if has("epochs") then .epochs else error("Missing required field: epochs") end' "$CONFIG_PATH")
+          echo "output_dir=$OUTPUT_DIR" >> "$GITHUB_OUTPUT"
+          echo "network=$NETWORK" >> "$GITHUB_OUTPUT"
+          echo "epochs=$EPOCHS" >> "$GITHUB_OUTPUT"
+
+      - name: Fail if output folder exists
+        run: |
+          if [ -d "${{ steps.parse.outputs.output_dir }}" ]; then
+            echo "Output folder ${{ steps.parse.outputs.output_dir }} already exists. Please delete it before running this workflow."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build site
+        run: npm run build
+
+      - name: Generate site resource hashes
+        id: generate-resources-hashes
+        run: |
+          OUTPUT_DIR="${{ steps.parse.outputs.output_dir }}"
+          HASHES=""
+
+          while IFS= read -r -d '' file; do
+            FILE_HASH=$(sha256sum "$file" | cut -d ' ' -f 1)
+            REL_PATH="${file#${OUTPUT_DIR}/}"  # Relative to build folder
+            HASHES+="${FILE_HASH}  ${REL_PATH}"$'\n'
+          done < <(find "$OUTPUT_DIR" -type f -print0)
+
+          echo "base64_hashes=$(echo -n "$HASHES" | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload site config
+        uses: actions/upload-artifact@v4
+        with:
+          name: site.config.json
+          path: site.config.json
+
+      - name: Upload output directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-output
+          path: ${{ steps.parse.outputs.output_dir }}
+
+  provenance:
+    needs: build-site
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.build-site.outputs.base64_hashes }}
+      upload-assets: false
+      provenance-name: 'walrus-sites.intoto.jsonl'
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+
+  verification:
+    needs: [build-site, provenance]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download provenance file
+        uses: actions/download-artifact@v4
+        with:
+          name: walrus-sites.intoto.jsonl
+
+      - name: Download site output files
+        uses: actions/download-artifact@v4
+        with:
+          name: site-output
+          path: ${{ needs.build-site.outputs.output_dir }}
+
+      - name: Install slsa-verifier
+        run: |
+          curl -sSfL https://github.com/slsa-framework/slsa-verifier/releases/latest/download/slsa-verifier-linux-amd64 -o slsa-verifier
+          chmod +x slsa-verifier
+          sudo mv slsa-verifier /usr/local/bin/
+
+      - name: Verify All Files via SLSA Provenance
+        run: |
+          PROVENANCE_PATH="walrus-sites.intoto.jsonl"
+          OUTPUT_DIR="${{ needs.build-site.outputs.output_dir }}"
+
+          while IFS= read -r -d '' file; do
+            REL_PATH="${file#${OUTPUT_DIR}/}"
+            echo "🔍 Verifying $REL_PATH..."
+            slsa-verifier verify-artifact "$file" \
+              --provenance-path "$PROVENANCE_PATH" \
+              --source-uri "github.com/${{ github.repository }}" \
+              &> /dev/null || {
+                echo "::error::❌ Verification failed for $REL_PATH"
+                exit 1
+              }
+          done < <(find "$OUTPUT_DIR" -type f -print0)
+
+  deploy:
+    needs: [build-site, provenance, verification]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download output directory
+        uses: actions/download-artifact@v4
+        with:
+          name: site-output
+          path: ${{ needs.build-site.outputs.output_dir }}
+
+      - name: Download provenance file
+        uses: actions/download-artifact@v4
+        with:
+          name: walrus-sites.intoto.jsonl
+          path: ${{ needs.build-site.outputs.output_dir }}/.well-known
+
+      - name: Deploy site to Walrus
+        uses: zktx-io/walrus-sites-ga@v0.4.4
+        with:
+          site-path: ${{ needs.build-site.outputs.output_dir}}
+          network: ${{ inputs.network }}
+          epochs: ${{ inputs.epochs }}
+        env:
+          SUI_ADDRESS: ${{ vars.SUI_ADDRESS }}
+          SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
