@@ -11,7 +11,7 @@ This repository contains the **[official Walrus Sites GitHub Actions workflow wi
 It supports both Mainnet and Testnet deployments and automates the entire build, verification, and deployment pipeline.
 
 Example site using this workflow:  
-🔗 [walrus-sites-ga-example](https://github.com/zktx-io/walrus-sites-ga-example)  
+🔗 Example: [walrus-sites-ga-example](https://github.com/zktx-io/walrus-sites-ga-example)  
 🛡️ Provenance verification: [View on Notary](https://notary.wal.app/site/workflow)
 
 ## Setup and Usage
