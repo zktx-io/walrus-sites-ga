@@ -1,9 +1,8 @@
-name: Walrus Sites Provenance Full Workflow
+name: Walrus Sites Provenance Workflow
 
 description: |
-  A reusable GitHub Actions workflow that builds a static site,
-  generates site manifest and provenance, and deploys to Walrus
-  with verified integrity.
+  Full-chain provenance workflow: build static site, generate SLSA provenance,
+  verify integrity, and deploy to Walrus via GitHub Actions.
 
 on:
   workflow_call:
