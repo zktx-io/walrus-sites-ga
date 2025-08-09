@@ -20,6 +20,13 @@ on:
         required: true
         type: number
         default: 5
+      SUI_ADDRESS:
+        required: true
+        type: string
+
+    secrets:
+      SUI_KEYSTORE:
+        required: true
 
 jobs:
   preprocess:
@@ -191,11 +198,11 @@ jobs:
           path: ${{ needs.build-site.outputs.output_dir }}/.well-known
 
       - name: Deploy site to Walrus
-        uses: zktx-io/walrus-sites-ga@v0.4.4
+        uses: zktx-io/walrus-sites-ga@v0.4.5
         with:
           site-path: ${{ needs.build-site.outputs.output_dir}}
           network: ${{ inputs.network }}
           epochs: ${{ inputs.epochs }}
         env:
-          SUI_ADDRESS: ${{ vars.SUI_ADDRESS }}
+          SUI_ADDRESS: ${{ inputs.SUI_ADDRESS }}
           SUI_KEYSTORE: ${{ secrets.SUI_KEYSTORE }}
